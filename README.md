@@ -7,11 +7,7 @@ A Blender addon that turns an audio or video file into a fully animated lyric vi
 ## Requirements
 
 - Blender 3.0 or newer
-- A Python environment (venv) with the following installed:
-  - `whisperx`
-  - `demucs`
-  - `torch` / `torchaudio`
-  - `ffmpeg-python`
+- Python 3.10+ in a virtual environment (venv) with the ML dependencies installed
 - A GPU is strongly recommended (CUDA). CPU works but transcription is slow.
 
 The addon ships with `ml_pipeline.py`, which is run as a subprocess using the venv Python — Blender's built-in Python is not used for the ML steps.
@@ -20,11 +16,27 @@ The addon ships with `ml_pipeline.py`, which is run as a subprocess using the ve
 
 ## Installation
 
-1. Run `build.sh` (or `python3 build.sh`) to produce `lyric_video_blender.zip`
+### 1. Set up the Python environment
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+For CUDA support, install PyTorch with your CUDA version before the rest:
+```bash
+pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install whisperx demucs ffmpeg-python
+```
+
+### 2. Install the Blender addon
+
+1. Run `build.sh` to produce `lyric_video_blender.zip`
 2. Open Blender → **Edit → Preferences → Add-ons → Install**
 3. Select `lyric_video_blender.zip`
 4. Enable **Lyric Video Blender**
-5. In the addon preferences, set **Python Binary (venv)** to the Python binary that has whisperx and demucs installed (e.g. `/home/you/venv/bin/python`)
+5. In the addon preferences, set **Python Binary (venv)** to the Python binary inside your venv (e.g. `/home/you/venv/bin/python`)
 
 Open the 3D Viewport, press **N**, and click the **LyricVideo** tab.
 

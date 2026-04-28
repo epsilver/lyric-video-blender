@@ -1,0 +1,5 @@
+whisperx
+demucs
+ffmpeg-python
+torch
+torchaudio
