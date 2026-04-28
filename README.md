@@ -44,6 +44,20 @@ Open the 3D Viewport, press **N**, and click the **LyricVideo** tab.
 
 ---
 
+## Model Downloads
+
+On the first run of **Extract & Transcribe**, the following models are downloaded automatically and cached for all future runs:
+
+| Model | Size | Cache location |
+|---|---|---|
+| Whisper large-v3 | ~3 GB | `~/.cache/huggingface/hub/` |
+| WhisperX alignment model (English) | ~1.2 GB | `~/.cache/huggingface/hub/` |
+| Demucs htdemucs | ~80 MB | `~/.cache/torch/hub/` |
+
+The first run will take several minutes depending on your connection. Subsequent runs are instant.
+
+---
+
 ## Quick Start
 
 1. Click **Setup TikTok Render** to configure 1080×1920 @ 30fps and create a camera
@@ -77,11 +91,13 @@ The panel shows live stage labels as the pipeline runs: *Loading models → Sepa
 
 Point the file picker at any `.srt` file and click **Load SRT** to populate the lyric list from existing subtitles. Supports UTF-8, Windows line endings, HTML tags, and SSA/ASS positioning tags.
 
+Click **Save to SRT** to export the current lyric list back out as an SRT file.
+
 ### Style Browser
 
 A collapsible grid below the SRT importer. Click any style name to preview it in the viewport — a temporary object is created and animated. Press **Space** to play. Click the same style again to dismiss.
 
-Click **+** next to a style to apply it to the currently selected lyric line.
+Check one or more lines in the lyric list, then click **+** next to a style to apply it to all checked lines at once. If no lines are checked, it applies to the currently highlighted line.
 
 | Style | Description |
 |---|---|
@@ -110,19 +126,23 @@ Click **+** next to a style to apply it to the currently selected lyric line.
 
 ### Lyric List
 
-Each row shows `Time | Style | Lyric`. Click a row to select it.
+Each row shows a checkbox, `Start → End`, style, and lyric text. Clicking a row selects it and jumps the playhead to that line's start time.
 
 | Button | Action |
 |---|---|
 | `+` | Add a blank line at the end |
-| `−` | Remove the selected line |
+| **Clear Line** | Remove the selected line |
 | `↑` / `↓` | Reorder the selected line |
+| **Clear All** | Remove all lines from the list |
+
+Check the checkbox on any row to include it in a batch style apply from the Style Browser.
 
 ### Edit Selected Line
 
 Fields for the currently highlighted row:
 
-- **Time** — `MM:SS` or decimal seconds (e.g. `1:30` or `90.5`). Leave blank to auto-space.
+- **Start** — `M:SS` or decimal seconds (e.g. `1:30` or `90.5`). Leave blank to auto-space.
+- **End** — End timestamp in the same format. Used to drive the fade-out; capped automatically if it would overlap the next line.
 - **Style** — Per-line style override. `— (use default)` falls back to the Default Style.
 - **Lyric** — The text shown on screen. Edit here to fix transcription mistakes.
 
@@ -134,11 +154,28 @@ Fields for the currently highlighted row:
 | **Default Style** | Fallback style for any line with no per-line override. |
 | **Align** | Text alignment: Center, Left, or Right. |
 | **Font Size** | Size of the text in Blender units. |
-| **Text Color** | RGB color of the text. |
-| **BG Color** | World background color. |
-| **Emission Strength** | Text brightness. Values above 1.0 produce a glow when bloom is enabled. |
+| **Text Color** | RGB color of the text. Updates live on existing objects. |
+| **BG Color** | World background color. Updates live. |
+| **Emission Strength** | Text brightness. Values above 1.0 produce a glow when bloom is enabled. Updates live. |
 
 **Sync to All Lines** — pushes the current font, size, alignment, color, and emission strength to all already-generated objects without touching keyframes or text content.
+
+### Background Box
+
+Toggles a filled rectangle behind each lyric line.
+
+| Setting | Description |
+|---|---|
+| **Background Box** | Enable or disable the box. Updates live on existing objects. |
+| **Fill Color** | Color of the background rectangle. Updates live. |
+| **Fill Opacity** | Transparency of the fill (0 = invisible, 1 = solid). |
+| **Pad X / Pad Y** | Horizontal and vertical padding between the text and the box edge. |
+| **Border** | Enable a border outline around the fill. |
+| **Border Color** | Color of the border. Updates live. |
+| **Border Opacity** | Transparency of the border. |
+| **Border Width** | Thickness of the border in Blender units. |
+
+Padding and border width take effect on the next **Generate Animation**.
 
 ### Timing
 
@@ -163,8 +200,9 @@ Fields for the currently highlighted row:
 When **Extract & Transcribe** runs on `/path/to/song.mp3`, a folder `/path/to/song/` is created containing:
 
 - `vocals.wav` — the separated vocal stem from Demucs
+- `song.srt` — a word-level SRT file, automatically loaded into the Import from SRT field
 
-The SRT file is not written by this addon; the animation lives directly in Blender. If you need an SRT for other tools, use the standalone `lyric-video-studio` app.
+Use **Save to SRT** to export the lyric list (after any edits) to an SRT file of your choice.
 
 ---
 
@@ -172,6 +210,7 @@ The SRT file is not written by this addon; the animation lives directly in Blend
 
 - **Fix words before generating** — use Edit Selected Line to correct mis-transcribed words. The timestamps come from forced alignment, so they stay accurate even after text edits.
 - **Mix styles freely** — each line has its own style override. Use Default Style as your baseline and only override lines that need something different.
+- **Batch style apply** — check multiple lines in the lyric list, then click **+** on a style to apply it to all of them at once.
 - **Sync without regenerating** — after generating, tweak font, size, or colors and click **Sync to All Lines** to update everything without touching keyframes.
 - **Glow effect** — raise Emission Strength above 1.0 and enable bloom (EEVEE: Render Properties → Bloom; Cycles: glare compositor node).
 - **Custom fonts** — any `.ttf` or `.otf` works. Google Fonts, DaFont, and Font Squirrel are good free sources.
@@ -191,6 +230,7 @@ lyric-video-blender/
 │   ├── panels.py        — single panel with all sections inline
 │   └── ml_pipeline.py   — ML script (Demucs + WhisperX), run as subprocess
 ├── build.sh             — builds lyric_video_blender.zip for installation
+├── requirements.txt     — Python dependencies for the venv
 └── README.md
 ```
 
