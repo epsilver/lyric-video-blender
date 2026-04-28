@@ -19,12 +19,12 @@ The addon ships with `ml_pipeline.py`, which is run as a subprocess using the ve
 ### 1. Set up the Python environment
 
 ```bash
-python3.11 -m venv venv
+python3.10 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-> **Python 3.11 is required.** whisperx does not support Python 3.12 or higher.
+> **Python 3.10 is required.** whisperx does not support Python 3.11 or higher.
 
 For CUDA support, install PyTorch with your CUDA version before the rest:
 ```bash
