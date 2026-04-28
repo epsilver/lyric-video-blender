@@ -7,7 +7,7 @@ A Blender addon that turns an audio or video file into a fully animated lyric vi
 ## Requirements
 
 - Blender 3.0 or newer
-- Python 3.10+ in a virtual environment (venv) with the ML dependencies installed
+- Python 3.11 in a virtual environment (venv) with the ML dependencies installed
 - A GPU is strongly recommended (CUDA). CPU works but transcription is slow.
 
 The addon ships with `ml_pipeline.py`, which is run as a subprocess using the venv Python — Blender's built-in Python is not used for the ML steps.
