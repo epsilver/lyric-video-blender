@@ -58,6 +58,12 @@ The first run will take several minutes depending on your connection. Subsequent
 
 ---
 
+## Panel
+
+![Lyric Video Blender panel](docs/panel.png)
+
+---
+
 ## Quick Start
 
 1. Click **Setup TikTok Render** to configure 1080×1920 @ 30fps and create a camera
